@@ -1,2 +1,2 @@
 # dive-into-nlp
-my record of learning nlp
+深度学习进阶：自然语言处理的代码
