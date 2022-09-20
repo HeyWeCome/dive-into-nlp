@@ -1,2 +1,5 @@
 # dive-into-nlp
-my record of learning nlp
+
+用来记录自己关于nlp的学习内容。
+
+- Jap-OR-DL:斋藤康毅[日] 深度学习进阶：自然语言处理。代码实现+学习笔记。
