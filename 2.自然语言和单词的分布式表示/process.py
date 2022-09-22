@@ -40,9 +40,46 @@ def create_co_matrix(corpus, vocab_size, window_size=1):
     return co_matrix
 
 
+# 余弦相似度
+def cos_similarity(x, y, eps=1e-8):
+    nx = x / np.sqrt(np.sum(x ** 2) + eps)
+    ny = y / np.sqrt(np.sum(y ** 2) + eps)
+    return np.dot(nx, ny)
+
+
+# 返回最相似的单词列表
+def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
+    # 1. 取出关键词
+    if query not in word_to_id:
+        print('%s is not found' % query)
+        return
+    print('\n[query] ' + query)
+    query_id = word_to_id[query]
+    query_vec = word_matrix[query_id]
+
+    # 2. 计算余弦相似度
+    vocab_size = len(id_to_word)
+    similarity = np.zeros(vocab_size)
+    for i in range(vocab_size):
+        similarity[i] = cos_similarity(word_matrix[i], query_vec)
+
+    # 3. 基于余弦相似度，按降序输出值
+    count = 0
+    for i in (-1 * similarity).argsort():
+        if id_to_word[i] == query:
+            continue
+        print(' %s: %s ' % (id_to_word[i], similarity[i]))
+
+        count += 1
+        if count >= top:
+            return
+
+
 corpus, word_to_id, id_to_word = preprocess(text)
 print('corpus,单词ID列表为:', corpus)
 print('word_to_id,单词到单词ID的字典:', word_to_id)
 print('id_to_word,单词ID到单词的字典:', id_to_word)
 co_matrix = create_co_matrix(corpus, len(corpus))
 print("共现矩阵为:\n", co_matrix)
+
+print(most_similar('you', word_to_id, id_to_word, co_matrix, top=5))
