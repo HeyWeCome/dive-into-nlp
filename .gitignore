@@ -131,3 +131,7 @@ dmypy.json
 # pycharm and Apple
 .idea
 .DS_Store
+
+*.pkl
+*.txt
+*.npy
