@@ -75,11 +75,35 @@ def most_similar(query, word_to_id, id_to_word, word_matrix, top=5):
             return
 
 
+# C: 共现矩阵
+# verbose: 是否输出运行结果的标志，大语料库时，设置为True
+# eps: 为了防止log2(0)=-inf
+def ppmi(C, verbose=False, eps=1e-8):
+    M = np.zeros_like(C, dtype=np.float32)
+    N = np.sum(C)
+    S = np.sum(C, axis=0)
+    total = C.shape[0] * C.shape[1]
+    cnt = 0
+
+    for i in range(C.shape[0]):
+        for j in range(C.shape[1]):
+            pmi = np.log2(C[i, j] * N / (S[j] * S[i]) + eps)
+            M[i, j] = max(0, pmi)
+
+        if verbose:
+            cnt += 1
+            if cnt % (total // 100 + 1) == 0:
+                print('%.1f%% done' % (100 * cnt / total))
+    return M
+
+
 corpus, word_to_id, id_to_word = preprocess(text)
 print('corpus,单词ID列表为:', corpus)
 print('word_to_id,单词到单词ID的字典:', word_to_id)
 print('id_to_word,单词ID到单词的字典:', id_to_word)
 co_matrix = create_co_matrix(corpus, len(corpus))
 print("共现矩阵为:\n", co_matrix)
+ppmi_res = ppmi(co_matrix)
+print("共现矩阵变为PPMI为:\n", ppmi_res)
 
 print(most_similar('you', word_to_id, id_to_word, co_matrix, top=5))
